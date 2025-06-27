@@ -5,7 +5,7 @@ import { Position, Range, Selection, TextEditorRevealType, Uri, window, workspac
 import { useDevServer } from './composables/useDevServer'
 import { useEditingSlideSource } from './composables/useEditingSlideSource'
 import { useFocusedSlideNo } from './composables/useFocusedSlideNo'
-import { configuredPort, forceEnabled, include, previewSync } from './configs'
+import { configuredPort, forceEnabled, include, previewSync, useApi } from './configs'
 import { activeEntry, activeProject, activeSlidevData, addProject, projects, rescanProjects } from './projects'
 import { findPossibleEntries } from './utils/findPossibleEntries'
 import { usePreviewWebview } from './views/previewWebview'
@@ -128,6 +128,44 @@ export function useCommands() {
     configuredPort.value = +port
   })
 
+  useCommand('slidev.toggle-api-mode', async () => {
+    const currentMode = useApi.value
+    const newMode = !currentMode
+    useApi.value = newMode
+
+    const modeText = newMode ? 'Direct API calls' : 'CLI commands'
+    window.showInformationMessage(`Slidev server startup method changed to: ${modeText}`)
+  })
+
+  useCommand('slidev.server-status', () => {
+    const project = activeProject.value
+    if (!project) {
+      window.showInformationMessage('No active Slidev project')
+      return
+    }
+
+    const server = useDevServer(project)
+    const serverInstance = server.serverInstance.value
+    const port = server.port.value
+
+    if (!port) {
+      window.showInformationMessage('Slidev server is not running')
+      return
+    }
+
+    let statusMessage = `Slidev server running on port ${port}`
+
+    if (serverInstance) {
+      const uptime = Math.round((Date.now() - serverInstance.startTime.getTime()) / 1000)
+      statusMessage += `\nMethod: Direct API\nEntry: ${serverInstance.entry}\nUptime: ${uptime}s`
+    }
+    else {
+      statusMessage += '\nMethod: CLI'
+    }
+
+    window.showInformationMessage(statusMessage)
+  })
+
   useCommand('slidev.start-dev', async () => {
     const project = activeProject.value
     if (!project) {
@@ -136,7 +174,7 @@ export function useCommands() {
     }
 
     const { start, showTerminal } = useDevServer(project)
-    start()
+    await start()
     showTerminal()
 
     const { retry } = usePreviewWebview()

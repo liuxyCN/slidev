@@ -9,6 +9,7 @@ export const {
   include,
   exclude,
   'dev-command': devCommand,
+  'use-api': useApiInitial,
 } = defineConfigs('slidev', {
   'force-enabled': Boolean,
   'port': Number,
@@ -17,7 +18,9 @@ export const {
   'include': Object as ConfigType<string[]>,
   'exclude': String,
   'dev-command': String,
+  'use-api': Boolean,
 })
 
 export const configuredPort = ref(configuredPortInitial)
 export const previewSync = ref(previewSyncInitial)
+export const useApi = ref(useApiInitial)

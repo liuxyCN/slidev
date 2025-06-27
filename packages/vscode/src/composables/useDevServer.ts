@@ -1,20 +1,24 @@
 import type { Ref } from 'reactive-vscode'
 import type { Terminal } from 'vscode'
 import type { SlidevProject } from '../projects'
+import type { SlidevServerInstance } from './useSlidevServer'
 import { basename } from 'node:path'
 import { getPort as getPortPlease } from 'get-port-please'
-import { toRef } from 'reactive-vscode'
-import { env } from 'vscode'
-import { devCommand } from '../configs'
+import { ref, toRef } from 'reactive-vscode'
+import { env, window } from 'vscode'
+import { devCommand, useApi } from '../configs'
+import { logger } from '../views/logger'
 import { useServerTerminal } from '../views/serverTerminal'
 import { useServerDetector } from './useServerDetector'
+import { checkSlidevAvailability, createSlidevServer } from './useSlidevServer'
 
 export type Server = {
   port: Ref<number | null>
   terminal: Ref<Terminal | null>
-  start: () => void
+  start: () => Promise<void>
   showTerminal: () => void
-  stop: () => void
+  stop: () => Promise<void>
+  serverInstance: Ref<SlidevServerInstance | null>
 } & ReturnType<typeof useServerDetector>
 
 const serverMap = new Map<SlidevProject, Server>()
@@ -26,23 +30,66 @@ export function useDevServer(project: SlidevProject) {
 
   const { terminal, getIsActive, show: showTerminal, sendText, close } = useServerTerminal(project)
   const port = toRef(project, 'port')
+  const serverInstance = ref<SlidevServerInstance | null>(null)
 
   async function start() {
-    if (getIsActive())
+    if (getIsActive() || serverInstance.value)
       return
-    port.value ??= await getPort()
-    const args = [
-      JSON.stringify(basename(project.entry)),
-      `--port ${port.value}`,
-      env.remoteName != null ? '--remote' : '',
-    ].filter(Boolean).join(' ')
-    // eslint-disable-next-line no-template-curly-in-string
-    sendText(devCommand.value.replaceAll('${args}', args).replaceAll('${port}', `${port.value}`))
+
+    try {
+      port.value ??= await getPort()
+
+      // Check user preference and API availability
+      const shouldUseApi = useApi.value
+      const isApiAvailable = shouldUseApi ? await checkSlidevAvailability() : false
+
+      if (shouldUseApi && isApiAvailable) {
+        // Use direct API call
+        logger.info('Starting Slidev server using direct API...')
+        serverInstance.value = await createSlidevServer(project, port.value)
+        logger.info(`Slidev server started successfully on port ${port.value}`)
+      }
+      else {
+        // Use CLI method (either by preference or fallback)
+        if (shouldUseApi && !isApiAvailable) {
+          logger.info('Slidev API not available, falling back to CLI method...')
+        }
+        else {
+          logger.info('Using CLI method as configured...')
+        }
+        const args = [
+          JSON.stringify(basename(project.entry)),
+          `--port ${port.value}`,
+          env.remoteName != null ? '--remote' : '',
+        ].filter(Boolean).join(' ')
+        // eslint-disable-next-line no-template-curly-in-string
+        sendText(devCommand.value.replaceAll('${args}', args).replaceAll('${port}', `${port.value}`))
+      }
+    }
+    catch (error) {
+      logger.error('Failed to start Slidev server:', error)
+      window.showErrorMessage(`Failed to start Slidev server: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
 
-  function stop() {
-    close()
-    port.value = null
+  async function stop() {
+    try {
+      if (serverInstance.value) {
+        logger.info(`Stopping Slidev server on port ${serverInstance.value.port}...`)
+        await serverInstance.value.stop()
+        serverInstance.value = null
+        logger.info('Slidev server stopped successfully')
+      }
+      close()
+      port.value = null
+    }
+    catch (error) {
+      logger.error('Failed to stop Slidev server:', error)
+      // Still try to clean up
+      close()
+      port.value = null
+      serverInstance.value = null
+    }
   }
 
   const result: Server = {
@@ -51,6 +98,7 @@ export function useDevServer(project: SlidevProject) {
     start,
     showTerminal,
     stop,
+    serverInstance,
     ...useServerDetector(port, project.entry),
   }
   serverMap.set(project, result)

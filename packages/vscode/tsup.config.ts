@@ -17,6 +17,9 @@ export default defineConfig({
   sourcemap: true,
   external: [
     'vscode',
+    '@slidev/cli',
+    '@slidev/types',
+    'vite',
   ],
   inject: ['./language-server/import-meta-url.ts'],
   define: {

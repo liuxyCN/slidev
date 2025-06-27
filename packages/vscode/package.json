@@ -184,6 +184,16 @@
         "title": "Configure preview port"
       },
       {
+        "command": "slidev.toggle-api-mode",
+        "category": "Slidev",
+        "title": "Toggle server startup method (API/CLI)"
+      },
+      {
+        "command": "slidev.server-status",
+        "category": "Slidev",
+        "title": "Show server status"
+      },
+      {
         "command": "slidev.start-dev",
         "category": "Slidev",
         "title": "Start slidev dev server",
@@ -391,6 +401,12 @@
           "scope": "window",
           "description": "The command to start Slidev dev server. See https://sli.dev/features/vscode-extension#dev-command",
           "default": "npm exec -c 'slidev ${args}'"
+        },
+        "slidev.use-api": {
+          "type": "boolean",
+          "scope": "window",
+          "description": "Use direct API calls instead of CLI commands to start Slidev server (faster startup, better error handling)",
+          "default": true
         }
       }
     },
@@ -446,6 +462,7 @@
   },
   "devDependencies": {
     "@antfu/utils": "catalog:frontend",
+    "@slidev/cli": "workspace:*",
     "@slidev/parser": "workspace:*",
     "@slidev/types": "workspace:*",
     "@types/node": "catalog:types",
