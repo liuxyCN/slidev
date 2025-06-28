@@ -8,7 +8,7 @@
       "autoAttachChildProcesses": true,
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
-        "--folder-uri=${workspaceRoot}/packages/vscode/syntaxes"
+        "--folder-uri=${workspaceRoot}/packages/slidev"
       ],
       "outFiles": [
         "${workspaceFolder}/packages/vscode/dist/**/*.js"

@@ -60,7 +60,6 @@ export async function createSlidevServer(
           host: 'localhost', // Always use localhost for API mode
           hmr: {
             host: 'localhost',
-            // Let Vite automatically choose an available port for HMR
           },
         },
         logLevel: 'warn',
@@ -71,8 +70,6 @@ export async function createSlidevServer(
           const { entry } = options
           const loaded = await parser.load(options.userRoot, entry, loadedSource, 'dev')
 
-          // For API mode, we don't need to handle theme changes or restarts
-          // Just return the new data for HMR to work
           return {
             ...loaded,
             themeMeta: options.themeMeta,
