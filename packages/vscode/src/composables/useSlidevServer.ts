@@ -4,14 +4,16 @@ import { logger } from '../views/logger'
 // Import Slidev core functions
 let createServer: any
 let resolveOptions: any
+let parser: any
 
 // Lazy load Slidev modules to avoid import issues
 async function loadSlidevModules() {
-  if (!createServer || !resolveOptions) {
+  if (!createServer || !resolveOptions || !parser) {
     try {
-      const { createServer: _createServer, resolveOptions: _resolveOptions } = await import('@slidev/cli')
+      const { createServer: _createServer, resolveOptions: _resolveOptions, parser: _parser } = await import('@slidev/cli')
       createServer = _createServer
       resolveOptions = _resolveOptions
+      parser = _parser
     }
     catch (error) {
       logger.error('Failed to load Slidev modules:', error)
@@ -56,8 +58,27 @@ export async function createSlidevServer(
           port,
           strictPort: true,
           host: 'localhost', // Always use localhost for API mode
+          hmr: {
+            host: 'localhost',
+            // Let Vite automatically choose an available port for HMR
+          },
         },
         logLevel: 'warn',
+      },
+      {
+        // Add loadData function for HMR support
+        async loadData(loadedSource: any) {
+          const { entry } = options
+          const loaded = await parser.load(options.userRoot, entry, loadedSource, 'dev')
+
+          // For API mode, we don't need to handle theme changes or restarts
+          // Just return the new data for HMR to work
+          return {
+            ...loaded,
+            themeMeta: options.themeMeta,
+            config: parser.resolveConfig(loaded.headmatter, options.themeMeta, entry),
+          }
+        },
       },
     )
 
