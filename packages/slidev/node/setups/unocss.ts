@@ -2,10 +2,13 @@ import type { ResolvedSlidevOptions, UnoSetup } from '@slidev/types'
 import type { UserConfig } from '@unocss/core'
 import type { Theme } from '@unocss/preset-uno'
 import { existsSync, readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { mergeConfigs, presetIcons } from 'unocss'
 import { loadSetups } from '../setups/load'
 import { loadModule } from '../utils'
+
+const require = createRequire(import.meta.url)
 
 export default async function setupUnocss(
   { clientRoot, roots, data, utils }: ResolvedSlidevOptions,
@@ -31,9 +34,13 @@ export default async function setupUnocss(
         presetIcons({
           collectionsNodeResolvePath: utils.iconsResolvePath,
           collections: {
-            slidev: {
+            'slidev': {
               logo: () => readFileSync(resolve(clientRoot, 'assets/logo.svg'), 'utf-8'),
             },
+            // 使用 require 方式加载图标集以避免 ES 模块导入问题
+            'carbon': () => require('@iconify-json/carbon/icons.json'),
+            'ph': () => require('@iconify-json/ph/icons.json'),
+            'svg-spinners': () => require('@iconify-json/svg-spinners/icons.json'),
           },
         }),
       ],
