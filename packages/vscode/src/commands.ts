@@ -173,9 +173,13 @@ export function useCommands() {
       return
     }
 
-    const { start, showTerminal } = useDevServer(project)
+    const { start, showTerminal, serverInstance } = useDevServer(project)
     await start()
-    showTerminal()
+
+    // Only show terminal if not using API mode (i.e., using CLI mode)
+    if (!serverInstance.value) {
+      showTerminal()
+    }
 
     const { retry } = usePreviewWebview()
     setTimeout(retry, 3000)
