@@ -1159,6 +1159,9 @@ importers:
       '@antfu/utils':
         specifier: catalog:frontend
         version: 9.2.0
+      '@slidev/cli':
+        specifier: workspace:*
+        version: link:../slidev
       '@slidev/parser':
         specifier: workspace:*
         version: link:../parser
