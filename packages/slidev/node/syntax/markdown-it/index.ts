@@ -10,10 +10,13 @@ import MarkdownItKatex from './markdown-it-katex'
 import MarkdownItLink from './markdown-it-link'
 import MarkdownItShiki from './markdown-it-shiki'
 import MarkdownItVDrag from './markdown-it-v-drag'
+// @ts-expect-error missing types
+import MarkdownItDiv from 'markdown-it-div'
 
 export async function useMarkdownItPlugins(md: MarkdownItAsync, options: ResolvedSlidevOptions, markdownTransformMap: Map<string, MagicString>) {
   const { data: { features, config }, utils: { katexOptions } } = options
 
+  md.use(MarkdownItDiv)
   if (config.highlighter === 'shiki') {
     md.use(await MarkdownItShiki(options))
   }

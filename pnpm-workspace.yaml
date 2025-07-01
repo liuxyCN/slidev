@@ -101,6 +101,7 @@ catalogs:
     markdown-it: ^14.1.0
     markdown-it-footnote: ^4.0.0
     markdown-it-mdc: ^0.2.5
+    markdown-it-div: ^1.1.0
     minimist: ^1.2.8
     mlly: ^1.7.4
     open: ^10.1.2
