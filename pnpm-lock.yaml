@@ -267,6 +267,9 @@ catalogs:
     markdown-it:
       specifier: ^14.1.0
       version: 14.1.0
+    markdown-it-div:
+      specifier: ^1.1.0
+      version: 1.1.0
     markdown-it-footnote:
       specifier: ^4.0.0
       version: 4.0.0
@@ -978,6 +981,9 @@ importers:
       markdown-it:
         specifier: catalog:prod
         version: 14.1.0
+      markdown-it-div:
+        specifier: catalog:prod
+        version: 1.1.0
       markdown-it-footnote:
         specifier: catalog:prod
         version: 4.0.0
@@ -4966,6 +4972,9 @@ packages:
 
   markdown-it-async@2.0.0:
     resolution: {integrity: sha512-jBthmQR5MwXR9Y8Y0teRoZAenaKQMdjuTfpbNARqMBSRPvyzyXCVduHZHakyyhL3ugIacCobXJrO07t277sIjw==}
+
+  markdown-it-div@1.1.0:
+    resolution: {integrity: sha512-Vz1T8cPG4sRofn5VlwiGMpy7AyhizbBZcFmvVDf/mlDgF7Mt6QqjPhc/nLlLYB3EANkJfO4kym7R6SZ7RhGvCQ==}
 
   markdown-it-footnote@4.0.0:
     resolution: {integrity: sha512-WYJ7urf+khJYl3DqofQpYfEYkZKbmXmwxQV8c8mO/hGIhgZ1wOe7R4HLFNwqx7TjILbnC98fuyeSsin19JdFcQ==}
@@ -11298,6 +11307,8 @@ snapshots:
     dependencies:
       '@types/markdown-it': 14.1.2
       markdown-it: 14.1.0
+
+  markdown-it-div@1.1.0: {}
 
   markdown-it-footnote@4.0.0: {}
 
