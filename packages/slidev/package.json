@@ -84,6 +84,7 @@
     "markdown-it": "catalog:prod",
     "markdown-it-footnote": "catalog:prod",
     "markdown-it-mdc": "catalog:prod",
+    "markdown-it-div": "catalog:prod",
     "mlly": "catalog:prod",
     "monaco-editor": "catalog:monaco",
     "open": "catalog:prod",
