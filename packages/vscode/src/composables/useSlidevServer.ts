@@ -61,6 +61,9 @@ export async function createSlidevServer(
           hmr: {
             host: 'localhost',
           },
+          fs: {
+            strict: false,
+          },
         },
         logLevel: 'warn',
       },
