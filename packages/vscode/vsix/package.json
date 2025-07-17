@@ -194,6 +194,12 @@
         "title": "Show server status"
       },
       {
+        "command": "slidev.download-clpe-theme",
+        "category": "Slidev",
+        "title": "Download CLPE theme",
+        "icon": "$(cloud-download)"
+      },
+      {
         "command": "slidev.start-dev",
         "category": "Slidev",
         "title": "Start slidev dev server",
@@ -306,6 +312,11 @@
           "group": "navigation@4"
         },
         {
+          "command": "slidev.download-clpe-theme",
+          "when": "view =~ /slidev-preview/",
+          "group": "navigation@4.5"
+        },
+        {
           "command": "slidev.start-dev",
           "when": "view =~ /slidev-preview/ && !slidev:preview:ready",
           "group": "navigation@5"
@@ -407,6 +418,11 @@
           "scope": "window",
           "description": "Use direct API calls instead of CLI commands to start Slidev server (faster startup, better error handling)",
           "default": true
+        },
+        "slidev.download-zip-url": {
+          "type": "string",
+          "scope": "window",
+          "description": "URL to download zip file from"
         }
       }
     },
@@ -468,6 +484,7 @@
     "@antfu/utils": "^9.2.0",
     "@types/node": "^22.15.18",
     "@types/vscode": "^1.89.0",
+    "@types/yauzl": "^2.10.3",
     "@volar/language-server": "~2.4.13",
     "@volar/vscode": "^2.4.13",
     "get-port-please": "^3.1.2",
@@ -480,6 +497,7 @@
     "volar-service-prettier": "^0.0.64",
     "volar-service-yaml": "^0.0.64",
     "@slidev/types": "51.6.1",
-    "@slidev/parser": "51.6.1"
+    "@slidev/parser": "51.6.1",
+    "yauzl": "^3.0.0"
   }
 }
