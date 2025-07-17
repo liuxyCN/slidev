@@ -419,10 +419,10 @@
           "description": "Use direct API calls instead of CLI commands to start Slidev server (faster startup, better error handling)",
           "default": true
         },
-        "slidev.download-zip-url": {
+        "slidev.download-theme-url": {
           "type": "string",
           "scope": "window",
-          "description": "URL to download zip file from"
+          "description": "URL to download theme file from"
         }
       }
     },

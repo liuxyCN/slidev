@@ -7,7 +7,7 @@ import { Position, Range, Selection, TextEditorRevealType, Uri, window, workspac
 import { useDevServer } from './composables/useDevServer'
 import { useEditingSlideSource } from './composables/useEditingSlideSource'
 import { useFocusedSlideNo } from './composables/useFocusedSlideNo'
-import { configuredPort, forceEnabled, include, previewSync, useApi, downloadZipUrl } from './configs'
+import { configuredPort, forceEnabled, include, previewSync, useApi, downloadThemeUrl } from './configs'
 import { activeEntry, activeProject, activeSlidevData, addProject, projects, rescanProjects } from './projects'
 import { findPossibleEntries } from './utils/findPossibleEntries'
 import { usePreviewWebview } from './views/previewWebview'
@@ -176,8 +176,8 @@ export function useCommands() {
         return
       }
 
-      const zipUrl = downloadZipUrl.value
-      if (!zipUrl) {
+      const themeUrl = downloadThemeUrl.value
+      if (!themeUrl) {
         window.showErrorMessage('No download URL configured')
         return
       }
@@ -194,7 +194,7 @@ export function useCommands() {
         progress.report({ increment: 0, message: 'Downloading theme...' })
 
         // Download the zip file
-        const response = await fetch(zipUrl)
+        const response = await fetch(themeUrl)
         if (!response.ok) {
           throw new Error(`Failed to download theme: ${response.statusText}`)
         }
