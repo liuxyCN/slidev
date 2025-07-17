@@ -1,6 +1,5 @@
-import { relative, join } from 'node:path'
+import { relative } from 'node:path'
 import { existsSync, mkdirSync, createWriteStream } from 'node:fs'
-import { promisify } from 'node:util'
 import * as yauzl from 'yauzl'
 import { slash } from '@antfu/utils'
 import { useCommand } from 'reactive-vscode'
@@ -8,7 +7,7 @@ import { Position, Range, Selection, TextEditorRevealType, Uri, window, workspac
 import { useDevServer } from './composables/useDevServer'
 import { useEditingSlideSource } from './composables/useEditingSlideSource'
 import { useFocusedSlideNo } from './composables/useFocusedSlideNo'
-import { configuredPort, forceEnabled, include, previewSync, useApi } from './configs'
+import { configuredPort, forceEnabled, include, previewSync, useApi, downloadZipUrl } from './configs'
 import { activeEntry, activeProject, activeSlidevData, addProject, projects, rescanProjects } from './projects'
 import { findPossibleEntries } from './utils/findPossibleEntries'
 import { usePreviewWebview } from './views/previewWebview'
@@ -177,6 +176,12 @@ export function useCommands() {
         return
       }
 
+      const zipUrl = downloadZipUrl.value
+      if (!zipUrl) {
+        window.showErrorMessage('No download URL configured')
+        return
+      }
+
       const workspacePath = workspaceFolder.uri.fsPath
       const themeDir = `${workspacePath}/clpe-theme`
 
@@ -189,7 +194,7 @@ export function useCommands() {
         progress.report({ increment: 0, message: 'Downloading theme...' })
 
         // Download the zip file
-        const response = await fetch('http://localhost:3000/getTheme')
+        const response = await fetch(zipUrl)
         if (!response.ok) {
           throw new Error(`Failed to download theme: ${response.statusText}`)
         }

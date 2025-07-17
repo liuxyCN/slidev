@@ -418,6 +418,11 @@
           "scope": "window",
           "description": "Use direct API calls instead of CLI commands to start Slidev server (faster startup, better error handling)",
           "default": true
+        },
+        "slidev.download-zip-url": {
+          "type": "string",
+          "scope": "window",
+          "description": "URL to download zip file from"
         }
       }
     },

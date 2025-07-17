@@ -10,6 +10,7 @@ export const {
   exclude,
   'dev-command': devCommand,
   'use-api': useApiInitial,
+  'download-zip-url': downloadZipUrl,
 } = defineConfigs('slidev', {
   'force-enabled': Boolean,
   'port': Number,
@@ -19,6 +20,7 @@ export const {
   'exclude': String,
   'dev-command': String,
   'use-api': Boolean,
+  'download-zip-url': String,
 })
 
 export const configuredPort = ref(configuredPortInitial)
