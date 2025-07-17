@@ -183,7 +183,7 @@ export function useCommands() {
       }
 
       const workspacePath = workspaceFolder.uri.fsPath
-      const themeDir = `${workspacePath}/clpe-theme`
+      const themeDir = `${workspacePath}`
 
       // Show progress
       await window.withProgress({
@@ -202,9 +202,9 @@ export function useCommands() {
         progress.report({ increment: 50, message: 'Extracting theme...' })
 
         // Create theme directory if it doesn't exist
-        if (!existsSync(themeDir)) {
-          mkdirSync(themeDir, { recursive: true })
-        }
+        // if (!existsSync(themeDir)) {
+        //   mkdirSync(themeDir, { recursive: true })
+        // }
 
         // Get the zip file as buffer
         const buffer = await response.arrayBuffer()
