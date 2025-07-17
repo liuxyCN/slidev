@@ -28,13 +28,13 @@ export function useDevServer(project: SlidevProject) {
   if (existing)
     return existing
 
-  const { terminal, getIsActive, show: showTerminal, sendText, close } = useServerTerminal(project)
+  // const { terminal, getIsActive, show: showTerminal, sendText, close } = useServerTerminal(project)
   const port = toRef(project, 'port')
   const serverInstance = ref<SlidevServerInstance | null>(null)
 
   async function start() {
-    if (getIsActive() || serverInstance.value)
-      return
+    // if (getIsActive() || serverInstance.value)
+    //   return
 
     try {
       port.value ??= await getPort()
@@ -50,23 +50,24 @@ export function useDevServer(project: SlidevProject) {
         logger.info(`Slidev server started successfully on port ${port.value}`)
       }
       else {
-        // Use CLI method (either by preference or fallback)
-        if (shouldUseApi && !isApiAvailable) {
-          logger.info('Slidev API not available, falling back to CLI method...')
-        }
-        else {
-          logger.info('Using CLI method as configured...')
-        }
-        const args = [
-          JSON.stringify(basename(project.entry)),
-          `--port ${port.value}`,
-          env.remoteName != null ? '--remote' : '',
-        ].filter(Boolean).join(' ')
-        // eslint-disable-next-line no-template-curly-in-string
-        sendText(devCommand.value.replaceAll('${args}', args).replaceAll('${port}', `${port.value}`))
+        // // Use CLI method (either by preference or fallback)
+        // if (shouldUseApi && !isApiAvailable) {
+        //   logger.info('Slidev API not available, falling back to CLI method...')
+        // }
+        // else {
+        //   logger.info('Using CLI method as configured...')
+        // }
+        // const args = [
+        //   JSON.stringify(basename(project.entry)),
+        //   `--port ${port.value}`,
+        //   env.remoteName != null ? '--remote' : '',
+        // ].filter(Boolean).join(' ')
+        // // eslint-disable-next-line no-template-curly-in-string
+        // sendText(devCommand.value.replaceAll('${args}', args).replaceAll('${port}', `${port.value}`))
       }
     }
     catch (error) {
+      port.value = null
       logger.error('Failed to start Slidev server:', error)
       window.showErrorMessage(`Failed to start Slidev server: ${error instanceof Error ? error.message : String(error)}`)
     }
@@ -80,13 +81,13 @@ export function useDevServer(project: SlidevProject) {
         serverInstance.value = null
         logger.info('Slidev server stopped successfully')
       }
-      close()
+      // close()
       port.value = null
     }
     catch (error) {
       logger.error('Failed to stop Slidev server:', error)
       // Still try to clean up
-      close()
+      // close()
       port.value = null
       serverInstance.value = null
     }
@@ -94,9 +95,9 @@ export function useDevServer(project: SlidevProject) {
 
   const result: Server = {
     port,
-    terminal,
+    terminal: ref(null),
     start,
-    showTerminal,
+    showTerminal: () => { },
     stop,
     serverInstance,
     ...useServerDetector(port, project.entry),

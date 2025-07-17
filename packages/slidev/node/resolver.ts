@@ -134,8 +134,8 @@ export function createResolver(type: 'theme' | 'addon', officials: Record<string
     // definitely a package name
     if (name.startsWith(`@slidev/${type}-`) || name.startsWith(`slidev-${type}-`)) {
       const pkgRoot = await findPkgRoot(name, importer)
-      if (!pkgRoot)
-        await promptForInstallation(name)
+      // if (!pkgRoot)
+        // await promptForInstallation(name)
       return [name, await findPkgRoot(name, importer, true)]
     }
 
@@ -156,7 +156,7 @@ export function createResolver(type: 'theme' | 'addon', officials: Record<string
 
     // fallback to prompt install
     const pkgName = officials[name] ?? (name[0] === '@' ? name : `slidev-${type}-${name}`)
-    await promptForInstallation(pkgName)
+    // await promptForInstallation(pkgName)
     return [pkgName, await findPkgRoot(pkgName, importer, true)]
   }
 }

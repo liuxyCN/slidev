@@ -22,7 +22,8 @@ export function generateErrorHtml(message: string) {
   const action = project
     ? project.port
       ? ``
-      : `<button onclick="sendCommand('start-dev')"> Start Dev Server </button>`
+      : `<button onclick="sendCommand('download-clpe-theme')" style="background-color:#009b63; color: white;"> Download CLPE Theme </button>
+      <button onclick="sendCommand('start-dev')"> Start Dev Server </button>`
     : projects.size
       ? `<button onclick="sendCommand('choose-entry')"> Choose active project </button>`
       : `<button onclick="sendCommand('add-entry')"> Add markdown file </button>`

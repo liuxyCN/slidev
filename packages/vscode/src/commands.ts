@@ -1,4 +1,7 @@
-import { relative } from 'node:path'
+import { relative, join } from 'node:path'
+import { existsSync, mkdirSync, createWriteStream } from 'node:fs'
+import { promisify } from 'node:util'
+import * as yauzl from 'yauzl'
 import { slash } from '@antfu/utils'
 import { useCommand } from 'reactive-vscode'
 import { Position, Range, Selection, TextEditorRevealType, Uri, window, workspace } from 'vscode'
@@ -164,6 +167,107 @@ export function useCommands() {
     }
 
     window.showInformationMessage(statusMessage)
+  })
+
+  useCommand('slidev.download-clpe-theme', async () => {
+    try {
+      const workspaceFolder = workspace.workspaceFolders?.[0]
+      if (!workspaceFolder) {
+        window.showErrorMessage('No workspace folder found')
+        return
+      }
+
+      const workspacePath = workspaceFolder.uri.fsPath
+      const themeDir = `${workspacePath}/clpe-theme`
+
+      // Show progress
+      await window.withProgress({
+        location: { viewId: 'slidev-preview' },
+        title: 'Downloading CLPE theme...',
+        cancellable: false
+      }, async (progress) => {
+        progress.report({ increment: 0, message: 'Downloading theme...' })
+
+        // Download the zip file
+        const response = await fetch('http://localhost:3000/getTheme')
+        if (!response.ok) {
+          throw new Error(`Failed to download theme: ${response.statusText}`)
+        }
+
+        progress.report({ increment: 50, message: 'Extracting theme...' })
+
+        // Create theme directory if it doesn't exist
+        if (!existsSync(themeDir)) {
+          mkdirSync(themeDir, { recursive: true })
+        }
+
+        // Get the zip file as buffer
+        const buffer = await response.arrayBuffer()
+        const uint8Array = new Uint8Array(buffer)
+
+        // Write to temporary file and extract using yauzl
+        const tempZipPath = `${themeDir}/temp.zip`
+        const fs = require('node:fs')
+        fs.writeFileSync(tempZipPath, uint8Array)
+
+        // Extract using yauzl
+        await new Promise<void>((resolve, reject) => {
+          yauzl.open(tempZipPath, { lazyEntries: true }, (err, zipfile) => {
+            if (err) {
+              reject(err)
+              return
+            }
+
+            zipfile!.readEntry()
+            zipfile!.on('entry', (entry) => {
+              if (/\/$/.test(entry.fileName)) {
+                // Directory entry
+                const dirPath = `${themeDir}/${entry.fileName}`
+                if (!existsSync(dirPath)) {
+                  mkdirSync(dirPath, { recursive: true })
+                }
+                zipfile!.readEntry()
+              } else {
+                // File entry
+                zipfile!.openReadStream(entry, (err, readStream) => {
+                  if (err) {
+                    reject(err)
+                    return
+                  }
+
+                  const filePath = `${themeDir}/${entry.fileName}`
+                  const dirPath = filePath.substring(0, filePath.lastIndexOf('/'))
+                  if (!existsSync(dirPath)) {
+                    mkdirSync(dirPath, { recursive: true })
+                  }
+
+                  const writeStream = createWriteStream(filePath)
+                  readStream!.pipe(writeStream)
+                  writeStream.on('close', () => {
+                    zipfile!.readEntry()
+                  })
+                  writeStream.on('error', reject)
+                })
+              }
+            })
+
+            zipfile!.on('end', () => {
+              // Clean up temp file
+              fs.unlinkSync(tempZipPath)
+              resolve()
+            })
+
+            zipfile!.on('error', reject)
+          })
+        })
+
+        progress.report({ increment: 100, message: 'Theme downloaded successfully!' })
+      })
+
+      window.showInformationMessage(`CLPE theme downloaded and extracted to: ${themeDir}`)
+    } catch (error) {
+      window.showErrorMessage(`Failed to download CLPE theme: ${error instanceof Error ? error.message : String(error)}`)
+    }
   })
 
   useCommand('slidev.start-dev', async () => {

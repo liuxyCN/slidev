@@ -194,6 +194,12 @@
         "title": "Show server status"
       },
       {
+        "command": "slidev.download-clpe-theme",
+        "category": "Slidev",
+        "title": "Download CLPE theme",
+        "icon": "$(cloud-download)"
+      },
+      {
         "command": "slidev.start-dev",
         "category": "Slidev",
         "title": "Start slidev dev server",
@@ -304,6 +310,11 @@
           "command": "slidev.preview-next-click",
           "when": "view =~ /slidev-preview/ && slidev:preview:ready && !slidev:preview:compat",
           "group": "navigation@4"
+        },
+        {
+          "command": "slidev.download-clpe-theme",
+          "when": "view =~ /slidev-preview/",
+          "group": "navigation@4.5"
         },
         {
           "command": "slidev.start-dev",
@@ -467,6 +478,7 @@
     "@slidev/types": "workspace:*",
     "@types/node": "catalog:types",
     "@types/vscode": "catalog:types",
+    "@types/yauzl": "catalog:types",
     "@volar/language-server": "catalog:vscode",
     "@volar/vscode": "catalog:vscode",
     "get-port-please": "catalog:prod",
@@ -477,6 +489,7 @@
     "tm-grammars": "catalog:frontend",
     "ts-json-schema-generator": "catalog:vscode",
     "volar-service-prettier": "catalog:vscode",
-    "volar-service-yaml": "catalog:vscode"
+    "volar-service-yaml": "catalog:vscode",
+    "yauzl": "catalog:prod"
   }
 }
